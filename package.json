@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "ts-node src/app.ts",
+    "start": "node dist/app.js",
+    "build": "tsc"
+  },
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "body-parser": "^2.2.0",
@@ -13,6 +18,8 @@
     "prisma": "^6.5.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.16",
     "nodemon": "^3.1.9",
