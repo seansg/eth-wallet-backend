@@ -9,9 +9,10 @@ datasource db {
 }
 
 model Wallet {
-  id        String @id @default(uuid())
-  address   String @unique
-  createdAt DateTime @default(now())
+  id         String  @id @default(uuid())
+  address    String  @unique
+  privateKey String
+  createdAt  DateTime @default(now())
 }
 
 model Transaction {
