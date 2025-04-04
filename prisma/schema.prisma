@@ -16,10 +16,13 @@ model Wallet {
 }
 
 model Transaction {
-  id          String @id @default(uuid())
-  from        String
-  to          String
-  amount      Float
-  hash        String @unique
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  fromAddress  String
+  toAddress    String
+  symbol        String
+  amount        Float
+  priceAtTx     Float
+  txHash        String   @unique
+  explorerUrl   String
+  createdAt     DateTime @default(now())
 }
