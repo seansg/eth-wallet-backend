@@ -5,6 +5,7 @@ export const getTransactionHistory = async (req: Request, res: Response) => {
   try {
     const { address } = req.params;
     const transactions = await prisma.transaction.findMany({
+      where: { OR: [{ fromAddress: address }, { toAddress: address }] },
       orderBy: { createdAt: "desc" },
     });
 
