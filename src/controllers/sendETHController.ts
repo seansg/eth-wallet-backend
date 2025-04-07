@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import prisma from "../config/db";
 import provider from "../config/provider";
 
-export const transfer = async (req: Request, res: Response) => {
+export const sendETH = async (req: Request, res: Response) => {
   try {
     const { fromAddress, toAddress, amount } = req.body;
 
