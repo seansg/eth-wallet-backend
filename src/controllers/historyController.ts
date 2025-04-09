@@ -1,11 +1,20 @@
 import { Request, Response } from "express";
 import prisma from "../config/db";
+import getTransactionHashes from "../services/getTransactionHashesService";
 
 export const getTransactionHistory = async (req: Request, res: Response) => {
   try {
     const { address } = req.params;
+
+    await getTransactionHashes('sepolia', address)
+
     const transactions = await prisma.transaction.findMany({
-      where: { OR: [{ fromAddress: address }, { toAddress: address }] },
+      where: {
+        OR: [
+          { fromAddress: { equals: address, mode: "insensitive" } },
+          { toAddress: { equals: address, mode: "insensitive" } }
+        ]
+      },
       orderBy: { createdAt: "desc" },
     });
 

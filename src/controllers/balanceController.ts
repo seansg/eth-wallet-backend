@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../config/db";
-import { getTokenPrice } from "../services/tokenService";
+import { getCurrentTokenPrice } from "../services/tokenPriceService";
+import getTransactionHashes from "../services/getTransactionHashesService";
 
 export const getBalance = async (req: Request, res: Response) => {
   const { address } = req.params;
@@ -11,8 +12,15 @@ export const getBalance = async (req: Request, res: Response) => {
     });
     if (!wallet) return res.status(404).json({ error: "Wallet not found" });
 
+    await getTransactionHashes('sepolia', address)
+
     const transactions = await prisma.transaction.findMany({
-      where: { OR: [{ fromAddress: address }, { toAddress: address }] },
+      where: {
+        OR: [
+          { fromAddress: { equals: address, mode: "insensitive" } },
+          { toAddress: { equals: address, mode: "insensitive" } }
+        ]
+      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -20,7 +28,7 @@ export const getBalance = async (req: Request, res: Response) => {
       ...transactions.map((tx) => tx.symbol),
     ]);
 
-    const prices = await getTokenPrice([...symbolSet]);
+    const prices = await getCurrentTokenPrice([...symbolSet]);
 
     const assets = [...symbolSet].map((symbol) => {
       const currentPrice = prices[symbol] || 0;

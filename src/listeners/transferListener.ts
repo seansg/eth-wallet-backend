@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { WebSocketProvider } from "ethers";
 import prisma from "../config/db";
-import { getTokenPrice } from "../services/tokenService";
+import { getCurrentTokenPrice } from "../services/tokenPriceService";
 
 const infuraUrl = process.env.INFURA_WEBSOCKET_URL;
 if (!infuraUrl) {
@@ -12,7 +12,7 @@ const provider = new WebSocketProvider(infuraUrl);
 const createTransactionRecord = async (tx: any, txHash: string) => {
 	const explorerUrl = `https://sepolia.etherscan.io/tx/${tx.hash}`;
 
-	const prices = await getTokenPrice(['ETH'])
+	const prices = await getCurrentTokenPrice(['ETH'])
 	const priceAtTx = prices['ETH'] || 0
 
 	await prisma.transaction.create({
@@ -29,14 +29,22 @@ const createTransactionRecord = async (tx: any, txHash: string) => {
 }
 
 export const listenToTransfers = async (walletAddress: string) => {
-	provider.on('pending', async (txHash) => {
+	const filter = {
+    address: walletAddress,
+    topics: [
+      ethers.id("Transfer(address,address,uint256)")
+    ]
+  };
+	provider.on(filter, async (log) => {
 		try {
-			const tx = await provider.getTransaction(txHash);
+			console.log(log)
+			const tx = await provider.getTransaction(log.transactionHash);
+			// const tx = await provider.getTransaction(txHash);
 			if (!tx)return
 			if (!tx.to || !tx.from || tx.to !== walletAddress && tx.from !== walletAddress) return
-			createTransactionRecord(tx, txHash)
+			createTransactionRecord(tx, log.transactionHash)
 		} catch (error) {
-			console.error(`Error fetching transaction ${txHash}:`, error);
+			console.error(`Error fetching transaction ${log.transactionHash}:`, error);
 		}
 	});
 };
