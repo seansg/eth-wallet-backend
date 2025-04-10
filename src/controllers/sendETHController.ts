@@ -19,9 +19,16 @@ export const sendETH = async (req: Request, res: Response) => {
 
     const senderWallet = new ethers.Wallet(senderWalletData.privateKey, provider);
     const value = ethers.parseEther(amount.toString());
-
     const tx = await senderWallet.sendTransaction({ to: toAddress, value });
-    await tx.wait();
+
+    const timeout = 30_000;
+
+    await Promise.race([
+      tx.wait(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Transaction timeout')), timeout)
+      )
+    ]);
 
     await prisma.transaction.create({
       data: {

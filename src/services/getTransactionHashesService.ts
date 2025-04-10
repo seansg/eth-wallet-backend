@@ -42,6 +42,8 @@ const getTransactionHashes = async (network: string, address: string) => {
 
   const response = await axios.get(url, { params });
   const transactions = response.data.result;
+	if (!transactions || !Array.isArray(transactions) || transactions.length === 0) return
+
   transactions.forEach((tx: any) => {
     createTransactionRecord(tx)
   })
