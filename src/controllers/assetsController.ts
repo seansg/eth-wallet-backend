@@ -43,7 +43,7 @@ export const getAssets = async (req: Request, res: Response) => {
 
       const averageCost = totalCost / holdingAmount;
       const currentValue = holdingAmount * currentPrice;
-      const pnl = (currentValue - totalCost) / holdingAmount * 100;
+      const pnl = (currentValue - totalCost) / totalCost * 100;
 
       return {
         symbol,
