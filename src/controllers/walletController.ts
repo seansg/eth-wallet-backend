@@ -23,7 +23,7 @@ export const createWallet = async (_: Request, res: Response) => {
 export const getWallets = async (_: Request, res: Response) => {
   try {
     const wallets = await prisma.wallet.findMany();
-    res.json({ wallets: wallets.map(wallet => ({
+    res.json({ wallets: wallets.map((wallet: { address: string }) => ({
       address: wallet.address
     })) });
   } catch (error) {
