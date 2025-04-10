@@ -3,7 +3,7 @@ import prisma from "../config/db";
 import { getCurrentTokenPrice } from "../services/tokenPriceService";
 import getTransactionHashes from "../services/getTransactionHashesService";
 
-export const getBalance = async (req: Request, res: Response) => {
+export const getAssets = async (req: Request, res: Response) => {
   const { address } = req.params;
 
   try {
@@ -43,7 +43,7 @@ export const getBalance = async (req: Request, res: Response) => {
 
       const averageCost = totalCost / holdingAmount;
       const currentValue = holdingAmount * currentPrice;
-      const pnl = currentValue - totalCost;
+      const pnl = (currentValue - totalCost) / holdingAmount * 100;
 
       return {
         symbol,
